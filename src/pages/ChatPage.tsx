@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ChangeEvent, FormEvent, useEffect, useRef, useState } from 'react';
 import '../style/chatPage.scss';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import AddIcon from '@mui/icons-material/Add';
@@ -6,10 +6,58 @@ import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import { useQuery } from 'react-query';
 import { getChat } from '../apis/chat';
 import Loading from '../components/Loading';
+import { ChatLog } from '../types/chat';
+import EachMessage from '../components/EachMessage';
 
 export default function ChatPage() {
   const { data, isLoading } = useQuery('chat', getChat);
-  console.log(data);
+  const [chatLog, setChatLog] = useState<ChatLog[]>([]);
+  const opponent = data?.find((el: ChatLog) => el.user_id === 2);
+  const opponentProfile: { photo: string; userName: string } = opponent
+    ? {
+        photo: opponent.photo_url,
+        userName: opponent.user_name,
+      }
+    : { photo: '', userName: '' };
+  const [inputData, setInputData] = useState<string>('');
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  const onInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setInputData(e.target.value);
+  };
+
+  const onMessageSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (inputData === '') return;
+
+    const newMessage = {
+      created_at: new Date().toString(),
+      id: +new Date(),
+      user_id: 1,
+      user_name: '소개녀',
+      photo_url: '',
+      msg: {
+        mtype: 'text',
+        content: inputData,
+      },
+    };
+    setChatLog(cur => [...cur, newMessage]);
+    setInputData('');
+  };
+
+  useEffect(() => {
+    const sortedById = data?.sort((a: ChatLog, b: ChatLog) => Number(new Date(a.id)) - Number(new Date(b.id)));
+    const sortedChatLog = sortedById?.sort(
+      (a: ChatLog, b: ChatLog) => Number(new Date(a.created_at)) - Number(new Date(b.created_at))
+    );
+    const filteredChatLog = sortedChatLog?.filter((el: ChatLog) => el.msg.mtype === 'text');
+    setChatLog(filteredChatLog);
+  }, [data]);
+
+  useEffect(() => {
+    if (contentRef.current) contentRef.current.scrollTop = contentRef.current?.scrollHeight;
+  }, [chatLog]);
 
   if (isLoading) return <Loading />;
 
@@ -21,30 +69,43 @@ export default function ChatPage() {
             <ChevronLeftIcon />
           </div>
           <div className="opponent">
-            <div>이미지</div>
-            <span>주선자</span>
+            <div>
+              <img src={opponentProfile.photo} alt="상대방 프로필 이미지" />
+            </div>
+            <span>{opponentProfile.userName}</span>
           </div>
           <div className="filler"> </div>
         </div>
-        <div className="content">
-          <div className="message">
-            <div className="profile-img"></div>
-            <div>
-              <div className="name"></div>
-              <div className="message-box"></div>
-            </div>
-            <div className="time">오후 3:25</div>
-          </div>
+        <div ref={contentRef} className="content">
+          {chatLog?.map(el => (
+            <EachMessage
+              key={el.id}
+              id={el.id}
+              userId={el.user_id}
+              photoUrl={el.photo_url}
+              userName={el.user_name}
+              content={el.msg.content}
+              createdAt={el.created_at}
+            />
+          ))}
         </div>
         <div className="send-area">
           <div className="plus-btn">
             <AddIcon color="action" />
           </div>
-          <form className="send-form">
-            <input className="send-input" type="text" />
-            <button type="submit" className="send-btn">
-              <ArrowUpwardIcon color="inherit" />
-            </button>
+          <form onSubmit={onMessageSubmit} className="send-form">
+            <input
+              onChange={onInputChange}
+              value={inputData}
+              className="send-input"
+              placeholder="메세지를 입력해주세요"
+              type="text"
+            />
+            {inputData.length > 0 && (
+              <button type="submit" className="send-btn">
+                <ArrowUpwardIcon color="inherit" />
+              </button>
+            )}
           </form>
         </div>
       </div>
