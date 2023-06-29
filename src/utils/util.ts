@@ -17,3 +17,12 @@ export const setTimeFormat = (time: string) => {
 
   return `${amOrPm} ${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
 };
+
+export const setDayFormat = (time: string) => {
+  const newDate = new Date(time);
+  const year = newDate.getFullYear();
+  const month = newDate.getMonth();
+  const date = newDate.getDate();
+
+  return `${year}년 ${month}월 ${date}일`;
+};

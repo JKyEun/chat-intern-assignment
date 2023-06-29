@@ -24,6 +24,9 @@ export default function ChatPage() {
   const contentRef = useRef<HTMLDivElement>(null);
   const [isModalOpen, setModalOpen] = useState<boolean>(false);
   const modalRef = useRef<HTMLDivElement>(null);
+  let prevDate = 0;
+
+  console.log(chatLog);
 
   useOutsideClick(isModalOpen, modalRef, setModalOpen);
 
@@ -86,18 +89,24 @@ export default function ChatPage() {
           <div className="filler"> </div>
         </div>
         <div ref={contentRef} className="content">
-          {chatLog?.map(el => (
-            <EachMessage
-              key={el.id}
-              id={el.id}
-              userId={el.user_id}
-              photoUrl={el.photo_url}
-              userName={el.user_name}
-              content={el.msg.content}
-              createdAt={el.created_at}
-              onImgClick={onImgClick}
-            />
-          ))}
+          {chatLog?.map(el => {
+            const curDate = new Date(el.created_at).getDate();
+            const isFirst = curDate !== prevDate;
+            prevDate = curDate;
+            return (
+              <EachMessage
+                key={el.id}
+                id={el.id}
+                userId={el.user_id}
+                photoUrl={el.photo_url}
+                userName={el.user_name}
+                content={el.msg.content}
+                createdAt={el.created_at}
+                isFirst={isFirst}
+                onImgClick={onImgClick}
+              />
+            );
+          })}
         </div>
         <div className="send-area">
           <div className="plus-btn">
