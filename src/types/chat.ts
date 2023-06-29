@@ -9,3 +9,5 @@ export type ChatLog = {
   user_id: number;
   user_name: string;
 };
+
+export type OpponentProfile = { photo: string; userName: string };
