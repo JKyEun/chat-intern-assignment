@@ -3,6 +3,10 @@
   justify-content: center;
   align-items: center;
   height: 100vh;
+  img {
+    width: 30px;
+    border-radius: 11px;
+  }
   .chat {
     display: flex;
     flex-direction: column;
@@ -10,6 +14,7 @@
     width: 360px;
     height: 720px;
     background-color: #fff9ef;
+    border: 1px solid #e1e2e4;
     .header {
       display: flex;
       position: relative;
@@ -19,15 +24,72 @@
       background-color: #faf0e1;
       .back {
         position: absolute;
-        left: 0;
+        left: 12px;
+        cursor: pointer;
       }
       .opponent {
+        div {
+          margin-right: 7px;
+        }
         display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
       }
     }
     .content {
       background-color: #fff9ef;
+      height: 610px;
+      overflow: auto;
+      padding: 12px;
+      font-size: 14px;
+      img {
+        width: 25px;
+        border-radius: 9px;
+      }
       .message {
+        display: flex;
+        margin: 10px 0;
+        .right-side {
+          margin-left: 10px;
+          .name {
+            font-weight: 600;
+            margin-bottom: 5px;
+          }
+          .message-box {
+            background-color: #fff;
+            padding: 10px;
+            border-radius: 12px;
+            border-top-left-radius: 0;
+            box-shadow: 0px 0px 1px 1px #e1e2e4;
+            max-width: 215px;
+          }
+        }
+        .time {
+          margin: 0 5px;
+          font-size: 12px;
+          color: #888;
+          display: flex;
+          align-items: end;
+        }
+      }
+      .message.opponent {
+        display: flex;
+        flex-direction: row-reverse;
+        .profile-img {
+          display: none;
+        }
+        .right-side {
+          margin-left: 0;
+          .name {
+            display: none;
+          }
+          .message-box {
+            border-radius: 12px;
+            background-color: #03006e;
+            color: #fff;
+          }
+        }
       }
     }
     .send-area {
@@ -53,7 +115,7 @@
           border: 1px solid #e1e2e4;
           height: 40px;
           width: 290px;
-          padding: 16px;
+          padding: 0 16px;
           padding-right: 50px;
         }
         .send-input:focus {
