@@ -3,8 +3,16 @@ import '../style/chatPage.scss';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import AddIcon from '@mui/icons-material/Add';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import { useQuery } from 'react-query';
+import { getChat } from '../apis/chat';
+import Loading from '../components/Loading';
 
 export default function ChatPage() {
+  const { data, isLoading } = useQuery('chat', getChat);
+  console.log(data);
+
+  if (isLoading) return <Loading />;
+
   return (
     <div className="chat-page">
       <div className="chat">
