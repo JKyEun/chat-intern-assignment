@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { MouseEvent } from 'react';
 import { setDayFormat, setTimeFormat } from '../utils/util';
 
 export default function EachMessage({
@@ -20,6 +20,17 @@ export default function EachMessage({
   isFirst: boolean;
   onImgClick: () => void;
 }) {
+  const copyMessage = async (e: MouseEvent) => {
+    const target = e.target as HTMLElement;
+    const parentTarget = target.parentElement;
+    try {
+      await navigator.clipboard.writeText(parentTarget!.innerText);
+      alert('메세지가 클립보드에 복사되었습니다');
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   return (
     <>
       {isFirst && (
@@ -33,7 +44,7 @@ export default function EachMessage({
         </div>
         <div className="right-side">
           <div className="name">{userName}</div>
-          <div className="message-box">
+          <div onClick={copyMessage} className="message-box">
             {content.split('\\n').map((contentEl, idx) => (
               <div key={contentEl + idx.toString()}>{contentEl}</div>
             ))}
