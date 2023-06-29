@@ -8,6 +8,7 @@ import { getChat } from '../apis/chat';
 import Loading from '../components/Loading';
 import { ChatLog } from '../types/chat';
 import EachMessage from '../components/EachMessage';
+import useOutsideClick from '../hooks/useOutsideClick';
 
 export default function ChatPage() {
   const { data, isLoading } = useQuery('chat', getChat);
@@ -21,6 +22,14 @@ export default function ChatPage() {
     : { photo: '', userName: '' };
   const [inputData, setInputData] = useState<string>('');
   const contentRef = useRef<HTMLDivElement>(null);
+  const [isModalOpen, setModalOpen] = useState<boolean>(false);
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  useOutsideClick(isModalOpen, modalRef, setModalOpen);
+
+  const onImgClick = () => {
+    setModalOpen(true);
+  };
 
   const onInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     setInputData(e.target.value);
@@ -69,7 +78,7 @@ export default function ChatPage() {
             <ChevronLeftIcon />
           </div>
           <div className="opponent">
-            <div>
+            <div onClick={onImgClick}>
               <img src={opponentProfile.photo} alt="상대방 프로필 이미지" />
             </div>
             <span>{opponentProfile.userName}</span>
@@ -86,6 +95,7 @@ export default function ChatPage() {
               userName={el.user_name}
               content={el.msg.content}
               createdAt={el.created_at}
+              onImgClick={onImgClick}
             />
           ))}
         </div>
@@ -108,6 +118,13 @@ export default function ChatPage() {
             )}
           </form>
         </div>
+        {isModalOpen && (
+          <div className="outside-modal">
+            <div ref={modalRef} className="modal">
+              <img src={opponentProfile.photo} alt="상대방 프로필 이미지" />
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
